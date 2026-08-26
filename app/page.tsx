@@ -1,69 +1,137 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, BookOpen, MessageCircleQuestion, PlayCircle } from "lucide-react";
+import Hero from "@/components/Hero";
+import { fatwas, questions, lectures } from "@/data/content";
+import { publications } from "@/data/publications";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main>
+      <Hero />
+
+      <section className="border-b border-slate-200 bg-white">
+        <div className="mx-auto grid max-w-7xl gap-5 px-5 py-12 md:grid-cols-3 lg:px-8">
+          <Link href="/fatwas" className="group rounded-2xl border border-slate-200 p-6 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="rounded-xl bg-blue-50 p-3 text-blue-700"><BookOpen size={21} /></span>
+              <ArrowRight className="text-slate-300 transition group-hover:text-blue-600" size={20} />
+            </div>
+            <h2 className="mt-5 text-xl font-semibold">Fatwas</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Latest and archived Islamic legal responses.</p>
+          </Link>
+
+          <Link href="/questions" className="group rounded-2xl border border-slate-200 p-6 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="rounded-xl bg-blue-50 p-3 text-blue-700"><MessageCircleQuestion size={21} /></span>
+              <ArrowRight className="text-slate-300 transition group-hover:text-blue-600" size={20} />
+            </div>
+            <h2 className="mt-5 text-xl font-semibold">Questions & Answers</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Find answers to questions on Islamic matters.</p>
+          </Link>
+
+          <Link href="/lectures" className="group rounded-2xl border border-slate-200 p-6 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="rounded-xl bg-blue-50 p-3 text-blue-700"><PlayCircle size={21} /></span>
+              <ArrowRight className="text-slate-300 transition group-hover:text-blue-600" size={20} />
+            </div>
+            <h2 className="mt-5 text-xl font-semibold">Lectures</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Recorded lectures and educational materials.</p>
+          </Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className="bg-slate-50 py-20">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">Latest</p>
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight">Recent Fatwas</h2>
+            </div>
+            <Link href="/fatwas" className="hidden text-sm font-semibold text-blue-700 sm:block">View all →</Link>
+          </div>
+
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {fatwas.map((item) => (
+              <article key={item.title} className="rounded-2xl bg-white p-7 shadow-sm ring-1 ring-slate-200">
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-700">{item.category}</span>
+                <h3 className="mt-3 text-xl font-semibold">{item.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-500">{item.excerpt}</p>
+                <Link href="/fatwas" className="mt-5 inline-block text-sm font-semibold text-blue-700">Read more →</Link>
+              </article>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">Featured</p>
+            <h2 className="mt-3 text-3xl font-semibold">Lecture Video</h2>
+            <p className="mt-4 max-w-lg leading-7 text-slate-500">
+              New lectures and recorded lessons will be presented here prominently.
+            </p>
+            <Link href="/lectures" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-blue-700">
+              Browse lectures <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className="relative aspect-video overflow-hidden rounded-3xl bg-slate-950 shadow-2xl">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.3),transparent_50%)]" />
+            <div className="relative flex h-full items-center justify-center">
+              <div className="text-center">
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-600 text-white shadow-xl">
+                  <PlayCircle size={34} />
+                </div>
+                <p className="mt-5 font-semibold text-white">Featured Lecture</p>
+                <p className="mt-1 text-sm text-slate-400">Official video to be added</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">Scholarship</p>
+              <h2 className="mt-2 text-3xl font-semibold">Selected Publications</h2>
+            </div>
+            <Link href="/publications" className="text-sm font-semibold text-blue-700">View all →</Link>
+          </div>
+
+          <div className="mt-8 divide-y divide-slate-200 border-y border-slate-200">
+            {publications.slice(0, 5).map((publication) => (
+              <Link href="/publications" key={publication.title} className="group block py-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-blue-700">{publication.year}</span>
+                    <h3 className="mt-1 max-w-4xl font-semibold text-slate-900 group-hover:text-blue-700">
+                      {publication.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-500">{publication.journal} · {publication.volume && `Vol. ${publication.volume}`} · pp. {publication.pages}</p>
+                  </div>
+                  <ArrowRight size={18} className="mt-1 shrink-0 text-slate-300 group-hover:text-blue-600" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-blue-700 py-16 text-white">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-5 md:flex-row md:items-center lg:px-8">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wider text-blue-200">Stay informed</p>
+            <h2 className="mt-2 text-3xl font-semibold">New fatwas and lectures, delivered.</h2>
+            <p className="mt-2 max-w-xl text-blue-100">Subscribe for notifications when new materials are published.</p>
+          </div>
+          <Link href="/subscribe" className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-50">
+            Subscribe
+          </Link>
+        </div>
+      </section>
+    </main>
   );
 }
