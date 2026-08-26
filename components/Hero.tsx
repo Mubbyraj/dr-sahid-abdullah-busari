@@ -11,8 +11,6 @@ export default function Hero() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(37,99,235,0.28),transparent_35%),linear-gradient(135deg,#020617,#0f172a)]" />
 
       <div className="relative mx-auto grid min-h-[650px] max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-[1.15fr_.85fr] lg:px-8">
-
-        {/* TEXT */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -51,7 +49,6 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* PHOTO */}
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -59,7 +56,6 @@ export default function Hero() {
           className="relative"
         >
           <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900 shadow-2xl">
-
             <Image
               src="/images/dr-saheed-abdullahi-busari-profile.jpg"
               alt="Dr. Sahid Abdullah Busari"
@@ -68,13 +64,8 @@ export default function Hero() {
               sizes="(max-width: 1024px) 90vw, 40vw"
               className="object-cover object-top"
             />
-
-            {/* Subtle overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
-
           </div>
         </motion.div>
-
       </div>
     </section>
   );

@@ -29,7 +29,6 @@ export default function Header() {
       <div className="header-main">
         <div className="container header-inner">
           <Link href="/" className="brand" onClick={() => setOpen(false)}>
-            <div className="brand-mark">SB</div>
             <div className="brand-text">
               <strong>Dr. Saheed Abdullahi Busari</strong>
               <span>Associate Professor · Fiqh &amp; Usul al-Fiqh</span>

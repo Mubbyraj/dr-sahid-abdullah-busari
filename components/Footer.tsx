@@ -13,7 +13,6 @@ export default function Footer() {
         <div className="container footer-grid">
           <div className="footer-intro">
             <div className="footer-brand">
-              <div className="brand-mark footer-mark">SB</div>
               <div>
                 <strong>Dr. Saheed Abdullahi Busari</strong>
                 <span>Associate Professor</span>
