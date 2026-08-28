@@ -1,9 +1,11 @@
 import Link from "next/link";
+
 import {
   ArrowUpRight,
   Mail,
   BookOpen,
   MessageCircleQuestion,
+  LockKeyhole,
 } from "lucide-react";
 
 export default function Footer() {
@@ -60,6 +62,11 @@ export default function Footer() {
             <Link href="/research">Research</Link>
             <Link href="/articles">Articles</Link>
             <Link href="/contact">Contact</Link>
+
+            <Link href="/admin/login">
+              <LockKeyhole size={15} />
+              Admin Login
+            </Link>
           </div>
 
           <div className="footer-column">
