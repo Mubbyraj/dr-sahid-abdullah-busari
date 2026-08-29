@@ -4,85 +4,119 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
-const navItems = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Fatwas", href: "/fatwas" },
-  { label: "Questions & Answers", href: "/questions" },
-  { label: "Lectures", href: "/lectures" },
-  { label: "Publications", href: "/publications" },
-  { label: "Research", href: "/research" },
+interface NavigationItem {
+  href: string;
+  label: string;
+}
+
+const navigation: NavigationItem[] = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/fatwas", label: "Fatwas" },
+  { href: "/questions", label: "Questions & Answers" },
+  { href: "/lectures", label: "Lectures" },
+  { href: "/publications", label: "Publications" },
+  { href: "/articles", label: "Articles" },
+  { href: "/research", label: "Research" },
 ];
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const closeMobileMenu = () => {
+    setMobileOpen(false);
+  };
 
   return (
-    <header className="site-header">
-      <div className="topbar">
-        <div className="container topbar-inner">
-          <span>Academic &amp; Scholarly Resources</span>
-          <span>Fiqh · Usul al-Fiqh · Islamic Jurisprudence</span>
-        </div>
-      </div>
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex min-h-20 items-center justify-between gap-6">
+          {/* Brand */}
+          <Link
+            href="/"
+            onClick={closeMobileMenu}
+            className="min-w-0"
+          >
+            <div className="truncate text-base font-bold tracking-tight text-slate-950 dark:text-white sm:text-lg">
+              Dr. Saheed Abdullahi Busari
+            </div>
 
-      <div className="header-main">
-        <div className="container header-inner">
-          <Link href="/" className="brand" onClick={() => setOpen(false)}>
-            <div className="brand-text">
-              <strong>Dr. Saheed Abdullahi Busari</strong>
-              <span>Associate Professor · Fiqh &amp; Usul al-Fiqh</span>
+            <div className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
+              Associate Professor · Fiqh &amp; Usul al-Fiqh
             </div>
           </Link>
 
-          <nav className="desktop-nav" aria-label="Main navigation">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href}>
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="header-actions">
-            <Link href="/subscribe" className="subscribe-button">
-              Subscribe
-            </Link>
-
-            <button
-              type="button"
-              className="mobile-menu-button"
-              onClick={() => setOpen(!open)}
-              aria-label={open ? "Close menu" : "Open menu"}
-            >
-              {open ? <X size={23} /> : <Menu size={23} />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {open && (
-        <div className="mobile-nav">
-          <div className="container mobile-nav-inner">
-            {navItems.map((item) => (
+          {/* Desktop Navigation */}
+          <nav className="hidden items-center gap-5 lg:flex">
+            {navigation.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setOpen(false)}
+                className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400"
               >
                 {item.label}
               </Link>
             ))}
 
+            {/* Subscribe Button */}
             <Link
               href="/subscribe"
-              className="mobile-subscribe"
-              onClick={() => setOpen(false)}
+              className="whitespace-nowrap rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
             >
-              Subscribe for updates
+              Subscribe
             </Link>
+          </nav>
+
+          {/* Mobile Controls */}
+          <div className="flex items-center gap-2 lg:hidden">
+            {/* Subscribe Button */}
+            <Link
+              href="/subscribe"
+              onClick={closeMobileMenu}
+              className="rounded-xl bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+            >
+              Subscribe
+            </Link>
+
+            {/* Menu Button */}
+            <button
+              type="button"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((open) => !open)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Mobile Navigation */}
+        {mobileOpen && (
+          <div className="border-t border-slate-200 py-4 dark:border-slate-800 lg:hidden">
+            <nav className="flex flex-col">
+              {navigation.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={closeMobileMenu}
+                  className="rounded-lg px-3 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-600 dark:text-slate-200 dark:hover:bg-slate-900 dark:hover:text-blue-400"
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              <Link
+                href="/subscribe"
+                onClick={closeMobileMenu}
+                className="mt-2 rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+              >
+                Subscribe for updates
+              </Link>
+            </nav>
+          </div>
+        )}
+      </div>
     </header>
   );
 }

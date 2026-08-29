@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { sendNewQuestionNotification } from "@/lib/email";
 
@@ -11,6 +12,7 @@ export async function POST(request: Request) {
     const question = String(body.question || "").trim();
     const category = String(body.category || "").trim();
 
+    // Only the question itself is required.
     if (!question) {
       return NextResponse.json(
         { error: "Please enter your question." },
@@ -18,6 +20,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate email only when one was provided.
     if (email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -31,6 +34,13 @@ export async function POST(request: Request) {
 
     const supabase = createSupabaseAdminClient();
 
+    /*
+     * Public submissions are ALWAYS created as pending.
+     *
+     * We intentionally do not accept status, answer, answered_at,
+     * or published_at from the visitor. This prevents someone from
+     * submitting a question directly as published or answered.
+     */
     const { data, error } = await supabase
       .from("questions")
       .insert({
@@ -50,11 +60,17 @@ export async function POST(request: Request) {
       console.error("Question submission error:", error);
 
       return NextResponse.json(
-        { error: "Unable to submit your question. Please try again." },
+        {
+          error: "Unable to submit your question. Please try again.",
+        },
         { status: 500 }
       );
     }
 
+    /*
+     * Notification failure should not make the question submission
+     * appear unsuccessful. The question has already been saved.
+     */
     const notification = await sendNewQuestionNotification({
       name,
       email,
@@ -82,7 +98,9 @@ export async function POST(request: Request) {
     console.error("Question API error:", error);
 
     return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
+      {
+        error: "Something went wrong. Please try again.",
+      },
       { status: 500 }
     );
   }
