@@ -3,6 +3,7 @@ import {
   ArrowUpRight,
   BookOpen,
   MessageCircleQuestion,
+  Mail,
 } from "lucide-react";
 
 export default function Footer() {
@@ -62,12 +63,18 @@ export default function Footer() {
           </div>
 
           <div className="footer-column">
-            <h3>Academic Enquiries</h3>
+            <h3>Stay Updated</h3>
 
             <p>
-              For academic correspondence, research enquiries and scholarly
-              collaboration, please use the official contact page.
+              Receive notifications when new fatwas, lectures, publications
+              and scholarly articles are published.
             </p>
+
+            <Link href="/subscribe" className="footer-subscribe">
+              <Mail size={16} />
+              Subscribe for updates
+              <ArrowUpRight size={14} />
+            </Link>
 
             <Link href="/contact" className="footer-link">
               Contact Dr. Busari
