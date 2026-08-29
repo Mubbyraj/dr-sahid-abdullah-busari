@@ -1,11 +1,8 @@
 import Link from "next/link";
-
 import {
   ArrowUpRight,
-  Mail,
   BookOpen,
   MessageCircleQuestion,
-  LockKeyhole,
 } from "lucide-react";
 
 export default function Footer() {
@@ -62,25 +59,19 @@ export default function Footer() {
             <Link href="/research">Research</Link>
             <Link href="/articles">Articles</Link>
             <Link href="/contact">Contact</Link>
-
-            <Link href="/admin/login">
-              <LockKeyhole size={15} />
-              Admin Login
-            </Link>
           </div>
 
           <div className="footer-column">
-            <h3>Stay Updated</h3>
+            <h3>Academic Enquiries</h3>
 
             <p>
-              Receive notifications about newly published lectures, fatwas and
-              scholarly resources.
+              For academic correspondence, research enquiries and scholarly
+              collaboration, please use the official contact page.
             </p>
 
-            <Link href="/subscribe" className="footer-subscribe">
-              <Mail size={16} />
-              Subscribe for updates
-              <ArrowUpRight size={14} />
+            <Link href="/contact" className="footer-link">
+              Contact Dr. Busari
+              <ArrowUpRight size={15} />
             </Link>
           </div>
         </div>

@@ -120,18 +120,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-blue-700 py-16 text-white">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-5 md:flex-row md:items-center lg:px-8">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wider text-blue-200">Stay informed</p>
-            <h2 className="mt-2 text-3xl font-semibold">New fatwas and lectures, delivered.</h2>
-            <p className="mt-2 max-w-xl text-blue-100">Subscribe for notifications when new materials are published.</p>
-          </div>
-          <Link href="/subscribe" className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-50">
-            Subscribe
-          </Link>
-        </div>
-      </section>
+
     </main>
   );
 }

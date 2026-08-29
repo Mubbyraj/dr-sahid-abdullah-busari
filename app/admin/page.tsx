@@ -8,7 +8,6 @@ import {
   LogOut,
   Video,
   ArrowUpRight,
-  Mail,
 } from "lucide-react";
 
 const adminSections = [
@@ -42,13 +41,7 @@ const adminSections = [
     href: "/admin/publications",
     icon: BookOpen,
   },
-  {
-    title: "Subscribers",
-    description:
-      "View and manage people receiving website notifications.",
-    href: "/admin/subscribers",
-    icon: Mail,
-  },
+
 ];
 
 export default async function AdminDashboard() {

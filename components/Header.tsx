@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, ChevronDown, Search } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -44,10 +44,6 @@ export default function Header() {
           </nav>
 
           <div className="header-actions">
-            <Link href="/subscribe" className="subscribe-button">
-              Subscribe
-            </Link>
-
             <button
               type="button"
               className="mobile-menu-button"
@@ -72,14 +68,6 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
-
-            <Link
-              href="/subscribe"
-              className="mobile-subscribe"
-              onClick={() => setOpen(false)}
-            >
-              Subscribe for updates
-            </Link>
           </div>
         </div>
       )}
