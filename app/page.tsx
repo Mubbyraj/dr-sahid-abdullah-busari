@@ -5,17 +5,35 @@ import {
   MessageCircleQuestion,
   PlayCircle,
 } from "lucide-react";
+
 import Hero from "@/components/Hero";
 import { fatwas } from "@/data/content";
 import { publications } from "@/data/publications";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const supabase = await createSupabaseServerClient();
+
+  const { data: questions } = await supabase
+    .from("questions")
+    .select(
+      "id, question, category, answer, published_at, created_at"
+    )
+    .eq("status", "published")
+    .not("answer", "is", null)
+    .order("published_at", { ascending: false })
+    .limit(3);
+
   return (
     <main>
       <Hero />
 
+      {/* Main sections */}
       <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto grid max-w-7xl gap-5 px-5 py-12 md:grid-cols-3 lg:px-8">
+
           <Link
             href="/fatwas"
             className="group rounded-2xl border border-slate-200 p-6 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
@@ -24,6 +42,7 @@ export default function Home() {
               <span className="rounded-xl bg-blue-50 p-3 text-blue-700">
                 <BookOpen size={21} />
               </span>
+
               <ArrowRight
                 className="text-slate-300 transition group-hover:text-blue-600"
                 size={20}
@@ -45,6 +64,7 @@ export default function Home() {
               <span className="rounded-xl bg-blue-50 p-3 text-blue-700">
                 <MessageCircleQuestion size={21} />
               </span>
+
               <ArrowRight
                 className="text-slate-300 transition group-hover:text-blue-600"
                 size={20}
@@ -68,6 +88,7 @@ export default function Home() {
               <span className="rounded-xl bg-blue-50 p-3 text-blue-700">
                 <PlayCircle size={21} />
               </span>
+
               <ArrowRight
                 className="text-slate-300 transition group-hover:text-blue-600"
                 size={20}
@@ -80,11 +101,14 @@ export default function Home() {
               Recorded lectures and educational materials.
             </p>
           </Link>
+
         </div>
       </section>
 
+      {/* Recent Fatwas */}
       <section className="bg-slate-50 py-20">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
+
           <div className="flex items-end justify-between gap-6">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
@@ -131,11 +155,104 @@ export default function Home() {
               </article>
             ))}
           </div>
+
         </div>
       </section>
 
+      {/* Latest Questions & Answers */}
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
+                Questions &amp; Answers
+              </p>
+
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight">
+                Latest Questions &amp; Answers
+              </h2>
+
+              <p className="mt-3 max-w-2xl text-slate-500">
+                Recent questions answered by Dr. Saheed Abdullahi Busari.
+              </p>
+            </div>
+
+            <Link
+              href="/questions"
+              className="hidden text-sm font-semibold text-blue-700 sm:block"
+            >
+              View all →
+            </Link>
+          </div>
+
+          {!questions || questions.length === 0 ? (
+            <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
+              <MessageCircleQuestion
+                size={36}
+                className="mx-auto text-slate-300"
+              />
+
+              <p className="mt-4 font-semibold text-slate-700">
+                No published questions yet.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-8 grid gap-5 md:grid-cols-3">
+              {questions.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/questions/${item.id}`}
+                  className="group rounded-2xl border border-slate-200 bg-slate-50 p-7 transition hover:-translate-y-1 hover:border-blue-300 hover:bg-white hover:shadow-lg"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-xs font-bold uppercase tracking-wider text-blue-700">
+                      {item.category || "General"}
+                    </span>
+
+                    <ArrowRight
+                      size={17}
+                      className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-blue-600"
+                    />
+                  </div>
+
+                  <h3 className="mt-4 line-clamp-3 text-xl font-semibold leading-8 text-slate-900">
+                    {item.question}
+                  </h3>
+
+                  <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-500">
+                    {item.answer}
+                  </p>
+
+                  <div className="mt-6 border-t border-slate-200 pt-4">
+                    <p className="text-xs text-slate-400">
+                      {item.published_at
+                        ? new Date(
+                            item.published_at
+                          ).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })
+                        : ""}
+                    </p>
+
+                    <p className="mt-1 text-sm font-semibold text-slate-700">
+                      Dr. Saheed Abdullahi Busari
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+        </div>
+      </section>
+
+      {/* Featured Lecture */}
       <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center">
+
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
               Featured
@@ -164,6 +281,7 @@ export default function Home() {
 
             <div className="relative flex h-full items-center justify-center">
               <div className="text-center">
+
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-600 text-white shadow-xl">
                   <PlayCircle size={34} />
                 </div>
@@ -175,14 +293,18 @@ export default function Home() {
                 <p className="mt-1 text-sm text-slate-400">
                   Official video to be added
                 </p>
+
               </div>
             </div>
           </div>
+
         </div>
       </section>
 
+      {/* Publications */}
       <section className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
+
           <div className="flex items-end justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
@@ -210,6 +332,7 @@ export default function Home() {
                 className="group block py-6"
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+
                   <div>
                     <span className="text-xs font-bold text-blue-700">
                       {publication.year}
@@ -221,7 +344,8 @@ export default function Home() {
 
                     <p className="mt-1 text-sm text-slate-500">
                       {publication.journal}
-                      {publication.volume && ` · Vol. ${publication.volume}`}
+                      {publication.volume &&
+                        ` · Vol. ${publication.volume}`}
                       {" · "}
                       pp. {publication.pages}
                     </p>
@@ -231,15 +355,19 @@ export default function Home() {
                     size={18}
                     className="mt-1 shrink-0 text-slate-300 group-hover:text-blue-600"
                   />
+
                 </div>
               </Link>
             ))}
           </div>
+
         </div>
       </section>
 
+      {/* Newsletter */}
       <section className="bg-blue-700 py-16 text-white">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-5 md:flex-row md:items-center lg:px-8">
+
           <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-blue-200">
               Stay informed
@@ -261,6 +389,7 @@ export default function Home() {
           >
             Subscribe
           </Link>
+
         </div>
       </section>
     </main>

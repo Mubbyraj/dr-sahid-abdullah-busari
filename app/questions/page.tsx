@@ -53,7 +53,6 @@ export default async function QuestionsPage() {
             <h2 className="font-semibold text-red-800">
               Unable to load questions
             </h2>
-
             <p className="mt-2 text-sm text-red-700">
               Please try again later.
             </p>
@@ -83,16 +82,14 @@ export default async function QuestionsPage() {
           </div>
         ) : (
           <>
-            <div className="mb-8 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wider text-blue-700">
-                  Latest
-                </p>
+            <div className="mb-8">
+              <p className="text-sm font-semibold uppercase tracking-wider text-blue-700">
+                Latest
+              </p>
 
-                <h2 className="mt-1 text-2xl font-semibold text-slate-900">
-                  Recent Questions & Answers
-                </h2>
-              </div>
+              <h2 className="mt-1 text-2xl font-semibold text-slate-900">
+                Recent Questions & Answers
+              </h2>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
