@@ -2,89 +2,134 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ArrowRight, PlayCircle } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-slate-950 text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(37,99,235,0.28),transparent_35%),linear-gradient(135deg,#020617,#0f172a)]" />
+    <section className="relative overflow-hidden bg-[#ebe9df] text-slate-900">
+      {/* Top light area */}
+      <div className="h-16 bg-[#ebe9df] sm:h-20 lg:h-24" />
 
-      <div className="relative mx-auto grid min-h-[620px] max-w-7xl items-center gap-10 px-5 py-16 sm:py-20 lg:grid-cols-[1.15fr_.85fr] lg:gap-12 lg:px-8">
+      {/* Main blue hero band */}
+      <div className="relative bg-[#0b3a82]">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+          <div className="relative flex min-h-[430px] items-center justify-center lg:min-h-[390px]">
+            
+            {/* Portrait */}
+            <div
+              className="
+                relative
+                z-10
+                h-[330px]
+                w-[250px]
+                shrink-0
+                overflow-hidden
+                bg-[#e7e5dc]
+                shadow-2xl
+                sm:h-[390px]
+                sm:w-[295px]
+                lg:absolute
+                lg:left-[10%]
+                lg:top-1/2
+                lg:h-[440px]
+                lg:w-[335px]
+                lg:-translate-y-1/2
+              "
+            >
+              <Image
+                src="/images/dr-saheed-abdullahi-busari-official.jpg"
+                alt="Dr. Saheed Abdullahi Busari"
+                fill
+                priority
+                className="object-cover object-top"
+                sizes="(max-width: 640px) 250px, (max-width: 1024px) 295px, 335px"
+              />
+            </div>
 
-        {/* TEXT */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <div className="mb-6 inline-flex rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">
-            Fiqh • Usul al-Fiqh • Islamic Research
+            {/* Name + academic information */}
+            <div
+              className="
+                relative
+                z-10
+                hidden
+                max-w-xl
+                lg:ml-[42%]
+                lg:block
+              "
+            >
+              <h1 className="font-serif text-5xl font-bold leading-[0.95] tracking-tight text-[#c76f52] xl:text-6xl">
+                Dr. Saheed
+                <span className="block">Abdullahi</span>
+                <span className="block">Busari</span>
+              </h1>
+
+              <p className="mt-6 text-sm font-semibold text-white">
+                Associate Professor · Fiqh &amp; Usul al-Fiqh
+              </p>
+
+              <p className="mt-4 max-w-md text-sm leading-6 text-white/75">
+                Scholar and researcher specialising in Fiqh, Usul al-Fiqh,
+                and contemporary Islamic legal research.
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href="/fatwas"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-white transition-opacity hover:opacity-75"
+                >
+                  Explore Fatwas
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link
+                  href="/lectures"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-white transition-opacity hover:opacity-75"
+                >
+                  <PlayCircle size={16} />
+                  Watch Lectures
+                </Link>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <h1 className="max-w-4xl text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-            Dr. Saheed Abdullahi
-            <span className="block text-blue-400">Busari</span>
+      {/* Mobile text */}
+      <div className="bg-[#0b3a82] px-5 pb-12 sm:px-6 lg:hidden">
+        <div className="mx-auto max-w-xl text-center">
+          <h1 className="font-serif text-4xl font-bold leading-[0.95] tracking-tight text-[#c76f52] sm:text-5xl">
+            Dr. Saheed
+            <span className="block">Abdullahi</span>
+            <span className="block">Busari</span>
           </h1>
 
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300">
-            Associate Professor and scholar specialising in Fiqh, Usul
-            al-Fiqh and contemporary Islamic legal research.
+          <p className="mt-5 text-sm font-semibold text-white">
+            Associate Professor · Fiqh &amp; Usul al-Fiqh
           </p>
 
-          <div className="mt-9 flex flex-wrap gap-4">
+          <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-white/75">
+            Scholar and researcher specialising in Fiqh, Usul al-Fiqh,
+            and contemporary Islamic legal research.
+          </p>
+
+          <div className="mt-6 flex flex-wrap justify-center gap-5">
             <Link
               href="/fatwas"
-              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-500"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-white transition-opacity hover:opacity-75"
             >
               Explore Fatwas
-              <ArrowRight size={17} />
+              <ArrowRight size={16} />
             </Link>
 
             <Link
               href="/lectures"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-white transition-opacity hover:opacity-75"
             >
-              <PlayCircle size={17} />
+              <PlayCircle size={16} />
               Watch Lectures
             </Link>
           </div>
-        </motion.div>
-
-        {/* IMAGE */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.15 }}
-          className="group relative mx-auto w-full max-w-[300px] sm:max-w-[360px] lg:max-w-[430px]"
-        >
-          <div className="relative h-[400px] overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900 shadow-2xl sm:h-[460px] lg:h-[520px]">
-            <Image
-              src="/images/dr-saheed-abdullahi-busari-official.jpg"
-              alt="Dr. Saheed Abdullahi Busari"
-              fill
-              priority
-              className="
-                origin-top
-                object-cover
-                object-top
-                scale-[1.48]
-                transition-transform
-                duration-700
-                ease-out
-                group-hover:scale-[1.58]
-                sm:scale-[1.35]
-                sm:group-hover:scale-[1.45]
-                lg:scale-[1.22]
-                lg:group-hover:scale-[1.30]
-              "
-              sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 430px"
-            />
-
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950/50 to-transparent" />
-          </div>
-        </motion.div>
-
+        </div>
       </div>
     </section>
   );
