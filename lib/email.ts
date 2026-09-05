@@ -111,6 +111,72 @@ export async function sendNewQuestionNotification({
   };
 }
 
+export async function sendNewSubscriberNotification({
+  email,
+}: {
+  email: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    console.error("RESEND_API_KEY is not configured.");
+    return {
+      success: false,
+      error: "Email service is not configured.",
+    };
+  }
+
+  if (!ADMIN_EMAIL) {
+    console.error("DR_SAHID_EMAIL is not configured.");
+    return {
+      success: false,
+      error: "Admin email is not configured.",
+    };
+  }
+
+  const resend = new Resend(apiKey);
+
+  const result = await resend.emails.send({
+    from: FROM_EMAIL,
+    to: ADMIN_EMAIL,
+    subject: "New Newsletter Subscriber — Dr. Saheed Abdullahi Busari",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #172033;">
+        <h2 style="color: #1d4ed8;">New Newsletter Subscriber</h2>
+
+        <p>A new visitor has subscribed to the official website newsletter.</p>
+
+        <hr />
+
+        <p>
+          <strong>Email:</strong><br />
+          ${escapeHtml(email)}
+        </p>
+
+        <hr />
+
+        <p>
+          Please log in to the administration dashboard to manage newsletter subscribers.
+        </p>
+      </div>
+    `,
+  });
+
+  if (result.error) {
+    console.error("Resend subscriber notification error:", result.error);
+
+    return {
+      success: false,
+      error: result.error.message,
+    };
+  }
+
+  return {
+    success: true,
+    data: result.data,
+  };
+}
+
 function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")

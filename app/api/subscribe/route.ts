@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendNewSubscriberNotification } from "@/lib/email";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 
 export async function POST(request: Request) {
@@ -73,13 +74,21 @@ export async function POST(request: Request) {
       });
 
     if (insertError) {
-      console.error("Subscriber insert error:", insertError);
-
       return NextResponse.json(
         { error: "Unable to complete your subscription." },
         { status: 500 }
       );
     }
+
+    const notification = await sendNewSubscriberNotification({ email });
+
+    if (!notification.success) {
+      console.error(
+        "Subscriber notification failed:",
+        notification.error
+      );
+    }
+
 
     return NextResponse.json(
       { message: "You have successfully subscribed." },
