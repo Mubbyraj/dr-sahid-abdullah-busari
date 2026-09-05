@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request,
   });
@@ -32,9 +32,9 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claims } = await supabase.auth.getClaims();
+
+  const userId = claims?.claims?.sub ?? null;
 
   const pathname = request.nextUrl.pathname;
 
@@ -44,11 +44,11 @@ export async function middleware(request: NextRequest) {
     pathname === "/admin/reset-password";
 
   if (isPublicAdminRoute) {
-    if (pathname === "/admin/login" && user) {
+    if (pathname === "/admin/login" && userId) {
       const { data: profile } = await supabase
         .from("profiles")
         .select("role")
-        .eq("id", user.id)
+        .eq("id", userId)
         .single();
 
       if (profile?.role === "admin") {
@@ -59,15 +59,15 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  if (pathname.startsWith("/admin") && !user) {
+  if (pathname.startsWith("/admin") && !userId) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
-  if (pathname.startsWith("/admin") && user) {
+  if (pathname.startsWith("/admin") && userId) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
-      .eq("id", user.id)
+      .eq("id", userId)
       .single();
 
     if (profile?.role !== "admin") {

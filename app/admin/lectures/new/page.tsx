@@ -2,10 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 export default function NewLecturePage() {
   const router = useRouter();
+
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
@@ -13,12 +15,12 @@ export default function NewLecturePage() {
   const [video, setVideo] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [status, setStatus] = useState<"draft" | "published">("draft");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     setError("");
 
     if (!title.trim()) {
@@ -33,16 +35,42 @@ export default function NewLecturePage() {
 
     setLoading(true);
 
+    let uploadedVideoPath: string | null = null;
+    let uploadedThumbnailPath: string | null = null;
+
     try {
       const supabase = createSupabaseBrowserClient();
 
+      // Verify the browser has an authenticated Supabase session.
       const {
         data: { user },
+        error: userError,
       } = await supabase.auth.getUser();
+
+      if (userError) {
+        throw new Error(`Authentication check failed: ${userError.message}`);
+      }
 
       if (!user) {
         router.push("/admin/login");
         return;
+      }
+
+      // Verify that the authenticated user is actually an admin.
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError) {
+        throw new Error(`Profile check failed: ${profileError.message}`);
+      }
+
+      if (profile?.role !== "admin") {
+        throw new Error(
+          `Your account is authenticated, but its role is "${profile?.role ?? "unknown"}".`
+        );
       }
 
       const slug =
@@ -54,8 +82,15 @@ export default function NewLecturePage() {
         "-" +
         Date.now();
 
-      const videoPath = `${user.id}/${slug}-${video.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`;
+      const videoFileName = video.name.replace(
+        /[^a-zA-Z0-9._-]/g,
+        "-"
+      );
 
+      const videoPath = `${user.id}/${slug}-${videoFileName}`;
+      uploadedVideoPath = videoPath;
+
+      // Upload video.
       const { error: videoError } = await supabase.storage
         .from("lecture-videos")
         .upload(videoPath, video, {
@@ -75,8 +110,15 @@ export default function NewLecturePage() {
 
       let thumbnailUrl: string | null = null;
 
+      // Upload thumbnail if provided.
       if (thumbnail) {
-        const thumbnailPath = `${user.id}/${slug}-${thumbnail.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`;
+        const thumbnailFileName = thumbnail.name.replace(
+          /[^a-zA-Z0-9._-]/g,
+          "-"
+        );
+
+        const thumbnailPath = `${user.id}/${slug}-${thumbnailFileName}`;
+        uploadedThumbnailPath = thumbnailPath;
 
         const { error: thumbnailError } = await supabase.storage
           .from("lecture-thumbnails")
@@ -100,6 +142,7 @@ export default function NewLecturePage() {
         thumbnailUrl = publicUrl;
       }
 
+      // Save lecture record.
       const { error: databaseError } = await supabase
         .from("lectures")
         .insert({
@@ -111,7 +154,10 @@ export default function NewLecturePage() {
           video_url: videoUrl,
           thumbnail_url: thumbnailUrl,
           status,
-          published_at: status === "published" ? new Date().toISOString() : null,
+          published_at:
+            status === "published"
+              ? new Date().toISOString()
+              : null,
         });
 
       if (databaseError) {
@@ -123,8 +169,38 @@ export default function NewLecturePage() {
       router.push("/admin/lectures");
       router.refresh();
     } catch (err) {
+      const supabase = createSupabaseBrowserClient();
+
+      if (uploadedVideoPath) {
+        const { error: cleanupError } = await supabase.storage
+          .from("lecture-videos")
+          .remove([uploadedVideoPath]);
+
+        if (cleanupError) {
+          console.error(
+            "Failed to clean up uploaded lecture video:",
+            cleanupError
+          );
+        }
+      }
+
+      if (uploadedThumbnailPath) {
+        const { error: cleanupError } = await supabase.storage
+          .from("lecture-thumbnails")
+          .remove([uploadedThumbnailPath]);
+
+        if (cleanupError) {
+          console.error(
+            "Failed to clean up uploaded lecture thumbnail:",
+            cleanupError
+          );
+        }
+      }
+
       setError(
-        err instanceof Error ? err.message : "Something went wrong."
+        err instanceof Error
+          ? err.message
+          : "Something went wrong."
       );
     } finally {
       setLoading(false);
@@ -132,160 +208,231 @@ export default function NewLecturePage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
-      <header className="border-b border-slate-800">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-blue-400">
-              Administration
-            </p>
-            <h1 className="mt-1 text-xl font-semibold">
-              Add New Lecture
-            </h1>
-          </div>
-
-          <button
-            onClick={() => router.push("/admin/lectures")}
-            className="rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
-          >
-            Back to lectures
-          </button>
-        </div>
-      </header>
-
-      <section className="mx-auto max-w-5xl px-6 py-10">
+    <main className="min-h-screen bg-slate-950 px-4 py-8 text-white sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl">
         <div className="mb-8">
-          <h2 className="text-3xl font-semibold tracking-tight">
-            Upload Lecture
-          </h2>
+          <p className="mb-2 text-sm font-medium text-blue-400">
+            Admin
+          </p>
 
-          <p className="mt-2 text-slate-400">
-            Add a recorded lecture, transcript and supporting thumbnail.
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Add New Lecture
+          </h1>
+
+          <p className="mt-2 text-sm text-slate-400">
+            Upload a lecture and choose whether it should remain a
+            draft or be published immediately.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 rounded-2xl border border-slate-800 bg-slate-900 p-7"
+          className="space-y-6"
         >
-          <div>
-            <label className="block text-sm font-medium text-slate-300">
-              Lecture title
-            </label>
+          <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="mb-5 text-lg font-semibold">
+              Lecture Details
+            </h2>
 
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              placeholder="Enter lecture title"
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
-            />
-          </div>
+            <div className="space-y-5">
+              <div>
+                <label
+                  htmlFor="title"
+                  className="mb-2 block text-sm font-medium text-slate-200"
+                >
+                  Title
+                </label>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300">
-              Category
-            </label>
+                <input
+                  id="title"
+                  type="text"
+                  value={title}
+                  onChange={(event) =>
+                    setTitle(event.target.value)
+                  }
+                  placeholder="Enter lecture title"
+                  disabled={loading}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-blue-500 disabled:opacity-50"
+                />
+              </div>
 
-            <input
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="e.g. Fiqh, Usul al-Fiqh, Islamic Finance"
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
-            />
-          </div>
+              <div>
+                <label
+                  htmlFor="category"
+                  className="mb-2 block text-sm font-medium text-slate-200"
+                >
+                  Category
+                </label>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300">
-              Description
-            </label>
+                <input
+                  id="category"
+                  type="text"
+                  value={category}
+                  onChange={(event) =>
+                    setCategory(event.target.value)
+                  }
+                  placeholder="e.g. Tafsir, Fiqh, Aqeedah"
+                  disabled={loading}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-blue-500 disabled:opacity-50"
+                />
+              </div>
 
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={5}
-              placeholder="Brief description of the lecture..."
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
-            />
-          </div>
+              <div>
+                <label
+                  htmlFor="description"
+                  className="mb-2 block text-sm font-medium text-slate-200"
+                >
+                  Description
+                </label>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300">
-              Transcript
-            </label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(event) =>
+                    setDescription(event.target.value)
+                  }
+                  placeholder="Brief description of the lecture"
+                  rows={5}
+                  disabled={loading}
+                  className="w-full resize-y rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-blue-500 disabled:opacity-50"
+                />
+              </div>
 
-            <textarea
-              value={transcript}
-              onChange={(e) => setTranscript(e.target.value)}
-              rows={10}
-              placeholder="Paste the lecture transcript here..."
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
-            />
-          </div>
+              <div>
+                <label
+                  htmlFor="transcript"
+                  className="mb-2 block text-sm font-medium text-slate-200"
+                >
+                  Transcript
+                </label>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300">
-              Lecture video
-            </label>
+                <textarea
+                  id="transcript"
+                  value={transcript}
+                  onChange={(event) =>
+                    setTranscript(event.target.value)
+                  }
+                  placeholder="Lecture transcript (optional)"
+                  rows={10}
+                  disabled={loading}
+                  className="w-full resize-y rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-blue-500 disabled:opacity-50"
+                />
+              </div>
+            </div>
+          </section>
 
-            <input
-              type="file"
-              accept="video/*"
-              required
-              onChange={(e) => setVideo(e.target.files?.[0] || null)}
-              className="mt-2 block w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-300"
-            />
+          <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="mb-5 text-lg font-semibold">
+              Media
+            </h2>
 
-            <p className="mt-2 text-xs text-slate-500">
-              Select the lecture video from your computer.
-            </p>
-          </div>
+            <div className="space-y-5">
+              <div>
+                <label
+                  htmlFor="video"
+                  className="mb-2 block text-sm font-medium text-slate-200"
+                >
+                  Lecture Video
+                </label>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300">
-              Thumbnail
-            </label>
+                <input
+                  id="video"
+                  type="file"
+                  accept="video/*"
+                  required
+                  disabled={loading}
+                  onChange={(event) =>
+                    setVideo(event.target.files?.[0] ?? null)
+                  }
+                  className="block w-full cursor-pointer rounded-xl border border-slate-700 bg-slate-950 text-sm text-slate-300 file:mr-4 file:border-0 file:bg-slate-800 file:px-4 file:py-3 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700 disabled:opacity-50"
+                />
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setThumbnail(e.target.files?.[0] || null)}
-              className="mt-2 block w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-300"
-            />
+                <p className="mt-2 text-xs text-slate-500">
+                  Select the lecture video to upload.
+                </p>
+              </div>
 
-            <p className="mt-2 text-xs text-slate-500">
-              Optional. Recommended for the lecture preview.
-            </p>
-          </div>
+              <div>
+                <label
+                  htmlFor="thumbnail"
+                  className="mb-2 block text-sm font-medium text-slate-200"
+                >
+                  Thumbnail
+                </label>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300">
-              Publication status
-            </label>
+                <input
+                  id="thumbnail"
+                  type="file"
+                  accept="image/*"
+                  disabled={loading}
+                  onChange={(event) =>
+                    setThumbnail(
+                      event.target.files?.[0] ?? null
+                    )
+                  }
+                  className="block w-full cursor-pointer rounded-xl border border-slate-700 bg-slate-950 text-sm text-slate-300 file:mr-4 file:border-0 file:bg-slate-800 file:px-4 file:py-3 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700 disabled:opacity-50"
+                />
 
-            <select
-              value={status}
-              onChange={(e) =>
-                setStatus(e.target.value as "draft" | "published")
-              }
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
-            >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-            </select>
-          </div>
+                <p className="mt-2 text-xs text-slate-500">
+                  Optional. Recommended for the public lecture listing.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="mb-5 text-lg font-semibold">
+              Publication
+            </h2>
+
+            <div>
+              <label
+                htmlFor="status"
+                className="mb-2 block text-sm font-medium text-slate-200"
+              >
+                Status
+              </label>
+
+              <select
+                id="status"
+                value={status}
+                onChange={(event) =>
+                  setStatus(
+                    event.target.value as
+                      | "draft"
+                      | "published"
+                  )
+                }
+                disabled={loading}
+                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-blue-500 disabled:opacity-50"
+              >
+                <option value="draft">
+                  Draft
+                </option>
+
+                <option value="published">
+                  Published
+                </option>
+              </select>
+
+              <p className="mt-2 text-xs text-slate-500">
+                Draft lectures are not visible on the public website.
+              </p>
+            </div>
+          </section>
 
           {error && (
-            <div className="rounded-xl border border-red-900 bg-red-950/40 px-4 py-3 text-sm text-red-300">
+            <div className="rounded-xl border border-red-900/60 bg-red-950/40 px-4 py-3 text-sm text-red-300">
               {error}
             </div>
           )}
 
-          <div className="flex justify-end gap-3 border-t border-slate-800 pt-6">
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={() => router.push("/admin/lectures")}
-              className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800"
+              disabled={loading}
+              className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-300 transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Cancel
             </button>
@@ -293,13 +440,13 @@ export default function NewLecturePage() {
             <button
               type="submit"
               disabled={loading}
-              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Uploading..." : "Save Lecture"}
+              {loading ? "Saving Lecture..." : "Save Lecture"}
             </button>
           </div>
         </form>
-      </section>
+      </div>
     </main>
   );
 }

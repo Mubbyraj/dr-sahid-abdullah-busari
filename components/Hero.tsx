@@ -20,18 +20,18 @@ export default function Hero() {
               className="
                 relative
                 z-10
-                h-[300px]
+                h-[280px]
                 w-[250px]
                 shrink-0
                 overflow-hidden
                 bg-[#e7e5dc]
                 shadow-2xl
-                sm:h-[350px]
+                sm:h-[320px]
                 sm:w-[295px]
                 lg:absolute
                 lg:left-[10%]
                 lg:top-1/2
-                lg:h-[400px]
+                lg:h-[360px]
                 lg:w-[335px]
                 lg:-translate-y-1/2
               "
