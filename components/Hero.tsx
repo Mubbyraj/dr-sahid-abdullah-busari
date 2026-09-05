@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -14,7 +14,7 @@ export default function Hero() {
       <div className="relative bg-[#0b3a82]">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <div className="relative flex min-h-[430px] items-center justify-center lg:min-h-[390px]">
-            
+
             {/* Portrait */}
             <div
               className="
@@ -57,6 +57,10 @@ export default function Hero() {
                 lg:block
               "
             >
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+                Academic Profile
+              </p>
+
               <h1 className="font-serif text-5xl font-bold leading-[0.95] tracking-tight text-[#c76f52] xl:text-6xl">
                 Dr. Saheed
                 <span className="block">Abdullahi</span>
@@ -68,25 +72,16 @@ export default function Hero() {
               </p>
 
               <p className="mt-4 max-w-md text-sm leading-6 text-white/75">
-                Scholar and researcher specialising in Fiqh, Usul al-Fiqh,
-                and contemporary Islamic legal research.
+                Islamic jurisprudence, legal theory, and contemporary Islamic finance.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-7">
                 <Link
-                  href="/fatwas"
+                  href="/about"
                   className="inline-flex items-center gap-2 text-sm font-semibold text-white transition-opacity hover:opacity-75"
                 >
-                  Explore Fatwas
+                  About Dr. Busari
                   <ArrowRight size={16} />
-                </Link>
-
-                <Link
-                  href="/lectures"
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-white transition-opacity hover:opacity-75"
-                >
-                  <PlayCircle size={16} />
-                  Watch Lectures
                 </Link>
               </div>
             </div>
@@ -97,6 +92,10 @@ export default function Hero() {
       {/* Mobile text */}
       <div className="bg-[#0b3a82] px-5 pb-12 sm:px-6 lg:hidden">
         <div className="mx-auto max-w-xl text-center">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            Academic Profile
+          </p>
+
           <h1 className="font-serif text-4xl font-bold leading-[0.95] tracking-tight text-[#c76f52] sm:text-5xl">
             Dr. Saheed
             <span className="block">Abdullahi</span>
@@ -108,25 +107,16 @@ export default function Hero() {
           </p>
 
           <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-white/75">
-            Scholar and researcher specialising in Fiqh, Usul al-Fiqh,
-            and contemporary Islamic legal research.
+            Islamic jurisprudence, legal theory, and contemporary Islamic finance.
           </p>
 
-          <div className="mt-6 flex flex-wrap justify-center gap-5">
+          <div className="mt-7">
             <Link
-              href="/fatwas"
+              href="/about"
               className="inline-flex items-center gap-2 text-sm font-semibold text-white transition-opacity hover:opacity-75"
             >
-              Explore Fatwas
+              About Dr. Busari
               <ArrowRight size={16} />
-            </Link>
-
-            <Link
-              href="/lectures"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-white transition-opacity hover:opacity-75"
-            >
-              <PlayCircle size={16} />
-              Watch Lectures
             </Link>
           </div>
         </div>
