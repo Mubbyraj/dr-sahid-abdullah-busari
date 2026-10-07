@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 type Lecture = {
@@ -21,9 +21,16 @@ type Lecture = {
 export default function EditLecturePage() {
   const params = useParams();
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
+
   const id = params.id as string;
 
   const [lecture, setLecture] = useState<Lecture | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
@@ -34,541 +41,342 @@ export default function EditLecturePage() {
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
 
-  const [showPreview, setShowPreview] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-
   useEffect(() => {
     async function loadLecture() {
-      try {
-        const supabase = createSupabaseBrowserClient();
+      const { data, error } = await supabase
+        .from("lectures")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
-
-        if (userError || !user) {
-          router.push("/admin/login");
-          return;
-        }
-
-        const { data: profile, error: profileError } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single();
-
-        if (profileError || profile?.role !== "admin") {
-          router.push("/admin");
-          return;
-        }
-
-        const { data, error: lectureError } = await supabase
-          .from("lectures")
-          .select("*")
-          .eq("id", id)
-          .single();
-
-        if (lectureError) {
-          throw new Error(lectureError.message);
-        }
-
-        if (!data) {
-          throw new Error("Lecture not found.");
-        }
-
-        const loadedLecture = data as Lecture;
-
-        setLecture(loadedLecture);
-        setTitle(loadedLecture.title);
-        setSlug(loadedLecture.slug);
-        setCategory(loadedLecture.category ?? "");
-        setDescription(loadedLecture.description ?? "");
-        setTranscript(loadedLecture.transcript ?? "");
-        setVideoUrl(loadedLecture.video_url ?? "");
-        setThumbnailUrl(loadedLecture.thumbnail_url ?? "");
-        setStatus(loadedLecture.status);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Unable to load lecture."
-        );
-      } finally {
+      if (error) {
+        setError(error.message);
         setLoading(false);
-      }
-    }
-
-    loadLecture();
-  }, [id, router]);
-
-  async function handleSave(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    setError("");
-    setMessage("");
-
-    if (!title.trim()) {
-      setError("Please enter a lecture title.");
-      return;
-    }
-
-    if (!slug.trim()) {
-      setError("Please enter a lecture slug.");
-      return;
-    }
-
-    setSaving(true);
-
-    try {
-      const supabase = createSupabaseBrowserClient();
-
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      if (userError || !user) {
-        router.push("/admin/login");
         return;
       }
 
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (profileError || profile?.role !== "admin") {
-        throw new Error("You do not have permission to edit lectures.");
-      }
-
-      const response = await fetch(`/api/admin/lectures/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          slug: slug.trim(),
-          category: category.trim() || null,
-          description: description.trim() || null,
-          transcript: transcript.trim() || null,
-          video_url: videoUrl.trim() || null,
-          thumbnail_url: thumbnailUrl.trim() || null,
-          status,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Unable to save lecture.");
-      }
-
-      setLecture(result.lecture as Lecture);
-      setMessage("Lecture saved successfully.");
-      router.refresh();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Unable to save lecture."
-      );
-    } finally {
-      setSaving(false);
+      setLecture(data);
+      setTitle(data.title || "");
+      setSlug(data.slug || "");
+      setCategory(data.category || "");
+      setDescription(data.description || "");
+      setTranscript(data.transcript || "");
+      setVideoUrl(data.video_url || "");
+      setThumbnailUrl(data.thumbnail_url || "");
+      setStatus(data.status || "draft");
+      setLoading(false);
     }
-  }
 
-  function handleStatusAction(nextStatus: "draft" | "published") {
-    const confirmed = window.confirm(
-      nextStatus === "published"
-        ? "Are you sure you want to publish this lecture?"
-        : "Are you sure you want to hide this lecture and move it back to draft?"
-    );
+    loadLecture();
+  }, [id]);
 
-    if (!confirmed) {
+  async function handleSave(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setSaving(true);
+    setError("");
+    setMessage("");
+
+    const { data: updatedLecture, error } = await supabase
+      .from("lectures")
+      .update({
+        title: title.trim(),
+        slug: slug.trim(),
+        category: category.trim() || null,
+        description: description.trim() || null,
+        transcript: transcript.trim() || null,
+        video_url: videoUrl.trim() || null,
+        thumbnail_url: thumbnailUrl.trim() || null,
+        status,
+        published_at:
+          status === "published"
+            ? lecture?.status === "published" && lecture.published_at
+              ? lecture.published_at
+              : new Date().toISOString()
+            : null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select("*")
+      .single();
+
+    if (error) {
+      setError(`Unable to update lecture: ${error.message}`);
+      setSaving(false);
       return;
     }
 
-    setStatus(nextStatus);
-    setMessage(
-      nextStatus === "published"
-        ? "Lecture marked for publishing. Click Save Lecture to apply the change."
-        : "Lecture marked as draft. Click Save Lecture to apply the change."
-    );
+    setLecture(updatedLecture);
+    setStatus(updatedLecture.status);
+    setMessage("Lecture saved successfully.");
+    setSaving(false);
+    router.refresh();
   }
 
   async function handleDelete() {
     const confirmed = window.confirm(
-      "Are you sure you want to delete this lecture? This action cannot be undone."
+      "Are you sure you want to delete this lecture? This cannot be undone."
     );
 
-    if (!confirmed) {
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setError("");
+
+    const extractStoragePath = (url: string | null, bucket: string) => {
+      if (!url) return null;
+      const marker = `/storage/v1/object/public/${bucket}/`;
+      const index = url.indexOf(marker);
+      return index === -1 ? null : decodeURIComponent(url.slice(index + marker.length));
+    };
+
+    const videoPath = extractStoragePath(lecture?.video_url ?? null, "lecture-videos");
+    const thumbnailPath = extractStoragePath(lecture?.thumbnail_url ?? null, "lecture-thumbnails");
+
+    const { error } = await supabase
+      .from("lectures")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      setError(`Unable to delete lecture: ${error.message}`);
+      setDeleting(false);
       return;
     }
 
-    setError("");
-    setMessage("");
-    setDeleting(true);
-
-    try {
-      const response = await fetch(`/api/admin/lectures/${id}`, {
-        method: "DELETE",
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Unable to delete lecture.");
-      }
-
-      router.push("/admin/lectures");
-      router.refresh();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Unable to delete lecture."
-      );
-      setDeleting(false);
+    if (videoPath) {
+      const { error: storageError } = await supabase.storage
+        .from("lecture-videos")
+        .remove([videoPath]);
+      if (storageError) console.error("Video cleanup failed:", storageError.message);
     }
+
+    if (thumbnailPath) {
+      const { error: storageError } = await supabase.storage
+        .from("lecture-thumbnails")
+        .remove([thumbnailPath]);
+      if (storageError) console.error("Thumbnail cleanup failed:", storageError.message);
+    }
+
+    router.push("/admin/lectures");
+    router.refresh();
   }
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
-        <p className="text-sm text-gray-500">Loading lecture...</p>
+      <main className="min-h-screen bg-slate-950 px-6 py-16 text-white">
+        <div className="mx-auto max-w-4xl">
+          <p className="text-slate-400">Loading lecture...</p>
+        </div>
       </main>
     );
   }
 
   if (error && !lecture) {
     return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {error}
-        </div>
+      <main className="min-h-screen bg-slate-950 px-6 py-16 text-white">
+        <div className="mx-auto max-w-4xl">
+          <Link
+            href="/admin/lectures"
+            className="text-sm text-blue-400 hover:text-blue-300"
+          >
+            ← Back to Lectures
+          </Link>
 
-        <Link
-          href="/admin/lectures"
-          className="mt-5 inline-block text-sm font-medium text-blue-700 hover:underline"
-        >
-          ← Back to lectures
-        </Link>
+          <div className="mt-8 rounded-2xl border border-red-900 bg-red-950/40 p-6">
+            <h1 className="text-xl font-semibold">Unable to load lecture</h1>
+            <p className="mt-2 text-sm text-red-300">{error}</p>
+          </div>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10">
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <Link
-            href="/admin/lectures"
-            className="text-sm font-medium text-gray-500 hover:text-gray-900"
-          >
-            ← Back to lectures
-          </Link>
+    <main className="min-h-screen bg-slate-950 px-6 py-12 text-white">
+      <div className="mx-auto max-w-4xl">
+        <Link
+          href="/admin/lectures"
+          className="text-sm text-blue-400 hover:text-blue-300"
+        >
+          ← Back to Lectures
+        </Link>
 
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-gray-900">
-            Edit Lecture
-          </h1>
+        <div className="mt-8">
+          <div className="flex items-start justify-between gap-6">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-blue-400">
+                Administration
+              </p>
 
-          <p className="mt-2 text-sm text-gray-500">
-            Update the lecture content, media, and publication status.
-          </p>
-        </div>
+              <h1 className="mt-2 text-4xl font-semibold">
+                Edit Lecture
+              </h1>
 
-        <div className="flex flex-wrap gap-2">
-          {status === "draft" ? (
+              <p className="mt-3 text-slate-400">
+                Update the lecture information and publication status.
+              </p>
+            </div>
+
             <button
               type="button"
-              onClick={() => handleStatusAction("published")}
-              disabled={saving || deleting}
-              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="rounded-xl border border-red-900 px-4 py-2 text-sm font-medium text-red-400 transition hover:bg-red-950 disabled:opacity-50"
             >
-              Publish
+              {deleting ? "Deleting..." : "Delete"}
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => handleStatusAction("draft")}
-              disabled={saving || deleting}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Hide
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={saving || deleting}
-            className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {deleting ? "Deleting..." : "Delete"}
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
-      {message && (
-        <div className="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
-          {message}
-        </div>
-      )}
-
-      <form onSubmit={handleSave} className="space-y-8">
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Publication
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Draft lectures are hidden from the public website. Published
-              lectures are publicly visible.
-            </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <form
+            onSubmit={handleSave}
+            className="mt-10 space-y-6 rounded-2xl border border-slate-800 bg-slate-900 p-7"
+          >
             <div>
-              <label
-                htmlFor="status"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Status
+              <label className="block text-sm font-medium text-slate-300">
+                Lecture title
+              </label>
+
+              <input
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300">
+                Slug
+              </label>
+
+              <input
+                required
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
+              />
+
+              <p className="mt-2 text-xs text-slate-500">
+                Example: introduction-to-usul-al-fiqh
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300">
+                Category
+              </label>
+
+              <input
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
+                placeholder="Fiqh, Usul al-Fiqh, Tafsir..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300">
+                Description
+              </label>
+
+              <textarea
+                rows={5}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300">
+                Transcript
+              </label>
+
+              <textarea
+                rows={10}
+                value={transcript}
+                onChange={(e) => setTranscript(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300">
+                Video URL
+              </label>
+
+              <input
+                type="url"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
+                placeholder="https://..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300">
+                Thumbnail URL
+              </label>
+
+              <input
+                type="url"
+                value={thumbnailUrl}
+                onChange={(e) => setThumbnailUrl(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
+                placeholder="https://..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300">
+                Publication status
               </label>
 
               <select
-                id="status"
                 value={status}
-                onChange={(event) =>
-                  setStatus(event.target.value as "draft" | "published")
+                onChange={(e) =>
+                  setStatus(e.target.value as "draft" | "published")
                 }
-                disabled={saving || deleting}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-blue-500"
               >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
               </select>
             </div>
 
-            <div className="flex items-end">
-              <div className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-600">
-                Current state:{" "}
-                <span className="font-semibold capitalize text-gray-900">
-                  {status}
-                </span>
+            {error && (
+              <div className="rounded-xl border border-red-900 bg-red-950/40 px-4 py-3 text-sm text-red-300">
+                {error}
               </div>
-            </div>
-          </div>
+            )}
 
-          <p className="mt-4 text-xs text-gray-500">
-            Changing the status does not save immediately. Click{" "}
-            <strong>Save Lecture</strong> to apply the change.
-          </p>
-        </section>
-
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Lecture Details
-            </h2>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <label
-                htmlFor="title"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Title
-              </label>
-
-              <input
-                id="title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                disabled={saving || deleting}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="slug"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Slug
-              </label>
-
-              <input
-                id="slug"
-                value={slug}
-                onChange={(event) => setSlug(event.target.value)}
-                disabled={saving || deleting}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              />
-
-              <p className="mt-1 text-xs text-gray-500">
-                Used in the public lecture URL.
-              </p>
-            </div>
-
-            <div>
-              <label
-                htmlFor="category"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Category
-              </label>
-
-              <input
-                id="category"
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
-                disabled={saving || deleting}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="description"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Description
-              </label>
-
-              <textarea
-                id="description"
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                disabled={saving || deleting}
-                rows={5}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="transcript"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Transcript
-              </label>
-
-              <textarea
-                id="transcript"
-                value={transcript}
-                onChange={(event) => setTranscript(event.target.value)}
-                disabled={saving || deleting}
-                rows={10}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Media</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Manage the lecture video and thumbnail.
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <label
-                  htmlFor="videoUrl"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Video URL
-                </label>
-
-                {videoUrl && (
-                  <button
-                    type="button"
-                    onClick={() => setShowPreview((current) => !current)}
-                    className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    {showPreview ? "✕ Close Preview" : "▶ Preview Video"}
-                  </button>
-                )}
+            {message && (
+              <div className="rounded-xl border border-emerald-900 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-300">
+                {message}
               </div>
+            )}
 
-              <input
-                id="videoUrl"
-                value={videoUrl}
-                onChange={(event) => setVideoUrl(event.target.value)}
-                disabled={saving || deleting}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              />
-
-              {showPreview && videoUrl && (
-                <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-black">
-                  <video
-                    key={videoUrl}
-                    src={videoUrl}
-                    controls
-                    preload="metadata"
-                    className="max-h-[520px] w-full"
-                  >
-                    Your browser does not support video playback.
-                  </video>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="thumbnailUrl"
-                className="mb-2 block text-sm font-medium text-gray-700"
+            <div className="flex items-center justify-end gap-3 border-t border-slate-800 pt-6">
+              <Link
+                href="/admin/lectures"
+                className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800"
               >
-                Thumbnail URL
-              </label>
+                Cancel
+              </Link>
 
-              <input
-                id="thumbnailUrl"
-                value={thumbnailUrl}
-                onChange={(event) => setThumbnailUrl(event.target.value)}
-                disabled={saving || deleting}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              />
+              <button
+                type="submit"
+                disabled={saving}
+                className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {saving ? "Saving..." : "Save Lecture"}
+              </button>
             </div>
-          </div>
-        </section>
-
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-gray-500">
-            Deleting this lecture permanently removes the database record and
-            attempts to remove its associated media files.
-          </p>
-
-          <div className="flex gap-3">
-            <Link
-              href="/admin/lectures"
-              className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </Link>
-
-            <button
-              type="submit"
-              disabled={saving || deleting}
-              className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save Lecture"}
-            </button>
-          </div>
+          </form>
         </div>
-      </form>
+      </div>
     </main>
   );
 }

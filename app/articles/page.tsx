@@ -1,20 +1,139 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  ArrowRight,
+  BookOpen,
+  FileText,
+  PenLine,
+} from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Articles",
+  description:
+    "Explore articles, essays and scholarly commentary by Dr. Saheed Abdullahi Busari on Islamic jurisprudence and contemporary Islamic issues.",
+  alternates: {
+    canonical: "/articles",
+  },
+};
+
 export default function ArticlesPage() {
   return (
     <main>
-      <section className="bg-slate-950 px-5 py-20 text-white">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-400">Writing</p>
-          <h1 className="mt-3 text-5xl font-semibold">Articles</h1>
-          <p className="mt-4 text-slate-300">Selected articles and scholarly commentary.</p>
+      {/* =========================
+          PHOTOGRAPHIC HERO
+          ========================= */}
+      <section className="inner-hero inner-hero-articles">
+        <div className="inner-hero-overlay" />
+
+        <div className="container inner-hero-content">
+          <span className="eyebrow">WRITING &amp; COMMENTARY</span>
+
+          <h1>Articles</h1>
+
+          <p>
+            Selected articles, essays and scholarly commentary on Islamic
+            jurisprudence and contemporary issues.
+          </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-5 py-16 lg:px-8">
-        <div className="rounded-2xl border border-slate-200 p-8">
-          <h2 className="text-2xl font-semibold">Articles will appear here</h2>
-          <p className="mt-3 leading-7 text-slate-500">
-            This section is ready for verified articles, essays and commentary.
-          </p>
+      {/* =========================
+          INTRODUCTION
+          ========================= */}
+      <section className="page-section">
+        <div className="container">
+          <div className="section-heading">
+            <span className="section-kicker">Scholarly Writing</span>
+
+            <h2>
+              Thoughtful engagement with Islamic scholarship and contemporary
+              questions.
+            </h2>
+
+            <p>
+              This section brings together articles, essays and commentary
+              addressing areas of Islamic law, jurisprudence and issues
+              relevant to contemporary Muslim societies.
+            </p>
+          </div>
+
+          {/* =========================
+              ARTICLE COLLECTION
+              ========================= */}
+          <div className="articles-placeholder-card">
+            <div className="articles-placeholder-icon">
+              <PenLine size={28} />
+            </div>
+
+            <span className="section-kicker">Article Collection</span>
+
+            <h2>Articles will appear here</h2>
+
+            <p>
+              This collection is being prepared for verified articles,
+              essays and scholarly commentary. Published materials will be
+              added here as they become available.
+            </p>
+
+            <div className="articles-placeholder-features">
+              <div>
+                <FileText size={19} />
+                <span>Scholarly articles</span>
+              </div>
+
+              <div>
+                <BookOpen size={19} />
+                <span>Academic essays</span>
+              </div>
+
+              <div>
+                <PenLine size={19} />
+                <span>Commentary</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================
+          EXPLORE MORE
+          ========================= */}
+      <section className="page-section articles-cta-section">
+        <div className="container">
+          <div className="articles-cta-card">
+            <div>
+              <span className="section-kicker">
+                Explore the Scholarship
+              </span>
+
+              <h2>
+                Discover research and published academic work.
+              </h2>
+
+              <p>
+                Explore the wider academic resources available on the
+                website, including research areas and publications.
+              </p>
+            </div>
+
+            <div className="articles-cta-actions">
+              <Link
+                href="/research"
+                className="button button-primary"
+              >
+                Research
+                <ArrowRight size={18} />
+              </Link>
+
+              <Link
+                href="/publications"
+                className="button button-outline"
+              >
+                Publications
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </main>

@@ -14,7 +14,6 @@ export async function proxy(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => {
             request.cookies.set(name, value);
@@ -32,9 +31,9 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  const { data: claims } = await supabase.auth.getClaims();
-
-  const userId = claims?.claims?.sub ?? null;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
 
@@ -43,36 +42,12 @@ export async function proxy(request: NextRequest) {
     pathname === "/admin/forgot-password" ||
     pathname === "/admin/reset-password";
 
-  if (isPublicAdminRoute) {
-    if (pathname === "/admin/login" && userId) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", userId)
-        .single();
-
-      if (profile?.role === "admin") {
-        return NextResponse.redirect(new URL("/admin", request.url));
-      }
-    }
-
-    return response;
-  }
-
-  if (pathname.startsWith("/admin") && !userId) {
+  if (pathname.startsWith("/admin") && !isPublicAdminRoute && !user) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
-  if (pathname.startsWith("/admin") && userId) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .single();
-
-    if (profile?.role !== "admin") {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
+  if (pathname === "/admin/login" && user) {
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   return response;

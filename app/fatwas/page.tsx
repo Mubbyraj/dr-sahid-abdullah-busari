@@ -1,113 +1,167 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  ArrowRight,
+  BookOpen,
+  Scale,
+  Search,
+} from "lucide-react";
+import { fatwas } from "@/data/content";
 
-import { createSupabaseServerClient } from "@/lib/supabase-server";
+export const metadata: Metadata = {
+  title: "Fatwas",
+  description:
+    "Browse selected fatwas and Islamic legal responses by Dr. Saheed Abdullahi Busari on matters of Islamic law and contemporary practice.",
+  alternates: {
+    canonical: "/fatwas",
+  },
+};
 
-export const dynamic = "force-dynamic";
-
-function formatDate(value: string | null) {
-  if (!value) return null;
-
-  return new Intl.DateTimeFormat("en", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
-export default async function FatwasPage() {
-  const supabase = await createSupabaseServerClient();
-
-  const { data: fatwas, error } = await supabase
-    .from("fatwas")
-    .select("id, title, slug, category, question, answer, published_at")
-    .eq("status", "published")
-    .not("published_at", "is", null)
-    .order("published_at", { ascending: false });
-
+export default function FatwasPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <section className="bg-[#0b3a82] text-white">
-        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/70">
-            Scholarly Guidance
-          </p>
+    <main>
+      {/* =========================
+          PHOTOGRAPHIC HERO
+          ========================= */}
+      <section className="inner-hero inner-hero-fatwas">
+        <div className="inner-hero-overlay" />
 
-          <h1 className="mt-4 max-w-3xl font-serif text-5xl font-bold tracking-tight sm:text-6xl">
-            Fatwas
-          </h1>
+        <div className="container inner-hero-content">
+          <span className="eyebrow">
+            ISLAMIC LEGAL RESPONSES
+          </span>
 
-          <p className="mt-6 max-w-2xl text-base leading-7 text-white/75">
-            Verified juristic responses and scholarly guidance published
-            through the official platform of Dr. Saheed Abdullahi Busari.
+          <h1>Fatwas</h1>
+
+          <p>
+            Selected Islamic legal responses addressing questions of
+            jurisprudence, worship and contemporary Muslim life.
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        {error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
-            Unable to load published fatwas at this time.
-          </div>
-        ) : !fatwas || fatwas.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-10 text-center">
-            <h2 className="text-xl font-semibold text-slate-900">
-              No published fatwas yet
+      {/* =========================
+          FATWA COLLECTION
+          ========================= */}
+      <section className="page-section">
+        <div className="container">
+          <div className="section-heading">
+            <span className="section-kicker">
+              Islamic Legal Scholarship
+            </span>
+
+            <h2>
+              Explore selected fatwas and legal responses.
             </h2>
 
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-500">
-              Published scholarly responses will appear here when they are
-              made available.
+            <p>
+              Browse the collection of Islamic legal responses and scholarly
+              guidance covering matters of Islamic law and practice.
             </p>
           </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {fatwas.map((fatwa) => {
-              const date = formatDate(fatwa.published_at);
 
-              return (
-                <article
-                  key={fatwa.id}
-                  className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-                >
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-                      {fatwa.category || "Fiqh"}
-                    </span>
+          {/* Search */}
+          <div className="fatwa-search-wrap">
+            <div className="fatwa-search">
+              <Search size={19} />
 
-                    {date && (
-                      <span className="text-xs text-slate-400">{date}</span>
-                    )}
-                  </div>
-
-                  <h2 className="mt-5 text-2xl font-semibold leading-tight text-slate-950">
-                    {fatwa.title}
-                  </h2>
-
-                  {fatwa.question && (
-                    <p className="mt-4 line-clamp-4 text-sm leading-7 text-slate-600">
-                      {fatwa.question}
-                    </p>
-                  )}
-
-                  {!fatwa.question && fatwa.answer && (
-                    <p className="mt-4 line-clamp-4 text-sm leading-7 text-slate-600">
-                      {fatwa.answer}
-                    </p>
-                  )}
-
-                  <div className="mt-auto pt-7">
-                    <Link
-                      href={`/fatwas/${fatwa.slug}`}
-                      className="inline-flex items-center text-sm font-semibold text-blue-700 hover:text-blue-900"
-                    >
-                      Read full fatwa →
-                    </Link>
-                  </div>
-                </article>
-              );
-            })}
+              <input
+                type="search"
+                placeholder="Search fatwas..."
+                aria-label="Search fatwas"
+              />
+            </div>
           </div>
-        )}
+
+          {/* Cards */}
+          <div className="fatwa-grid">
+            {fatwas.map((fatwa) => (
+              <Link
+                key={fatwa.title}
+                href="/fatwas/recent"
+                className="fatwa-card"
+              >
+                <div className="fatwa-card-header">
+                  <div className="icon-box">
+                    <Scale size={23} />
+                  </div>
+
+                  <span className="fatwa-category">
+                    {fatwa.category}
+                  </span>
+                </div>
+
+                <h2>{fatwa.title}</h2>
+
+                <p>{fatwa.excerpt}</p>
+
+                <span className="text-link">
+                  Read fatwa
+                  <ArrowRight size={16} />
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          {fatwas.length === 0 && (
+            <div className="empty-state">
+              <BookOpen size={30} />
+
+              <h3>No fatwas available yet</h3>
+
+              <p>
+                Published legal responses will appear here as they are added
+                to the collection.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* =========================
+          BOTTOM CTA
+          ========================= */}
+      <section className="page-section fatwas-cta-section">
+        <div className="container">
+          <div className="fatwa-cta-card">
+            <div className="fatwa-cta-icon">
+              <Scale size={25} />
+            </div>
+
+            <div className="fatwa-cta-content">
+              <span className="section-kicker">
+                Further Study
+              </span>
+
+              <h2>
+                Explore Islamic jurisprudence in greater depth.
+              </h2>
+
+              <p>
+                Discover research, publications and lectures covering Fiqh,
+                Usul al-Fiqh and related areas of Islamic scholarship.
+              </p>
+            </div>
+
+            <div className="fatwa-cta-actions">
+              <Link
+                href="/research"
+                className="button button-primary"
+              >
+                Research
+                <ArrowRight size={18} />
+              </Link>
+
+              <Link
+                href="/lectures"
+                className="button button-outline"
+              >
+                Lectures
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   );

@@ -53,9 +53,8 @@ export default async function AdminQuestionsPage() {
             <h2 className="font-semibold text-red-300">
               Unable to load questions
             </h2>
-
             <p className="mt-2 text-sm text-red-400">
-              Please try again later.
+              {error.message}
             </p>
           </div>
         ) : !questions || questions.length === 0 ? (
@@ -110,8 +109,8 @@ export default async function AdminQuestionsPage() {
                       </p>
                     )}
 
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <span className="rounded-full bg-slate-800 px-3 py-1 text-xs capitalize text-slate-400">
+                    <div className="mt-4 flex gap-2">
+                      <span className="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-400">
                         {question.status || "pending"}
                       </span>
 

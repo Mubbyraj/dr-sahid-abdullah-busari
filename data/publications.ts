@@ -6,7 +6,6 @@ export const publications = [
     volume: "6 (2)",
     pages: "139–158",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2024,
@@ -16,7 +15,6 @@ export const publications = [
     volume: "7 (1)",
     pages: "1–15",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2024,
@@ -25,7 +23,6 @@ export const publications = [
     volume: "21 (1)",
     pages: "1–18",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/113223/",
   },
   {
     year: 2024,
@@ -35,7 +32,6 @@ export const publications = [
     volume: "10 (2)",
     pages: "1–11",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2024,
@@ -46,7 +42,6 @@ export const publications = [
     volume: "",
     pages: "164–182",
     type: "Book Chapter",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2024,
@@ -56,7 +51,6 @@ export const publications = [
     volume: "32 (2)",
     pages: "551–583",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/117494/",
   },
   {
     year: 2024,
@@ -66,7 +60,6 @@ export const publications = [
     volume: "12 (2)",
     pages: "1–17",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/114986/",
   },
   {
     year: 2024,
@@ -76,7 +69,6 @@ export const publications = [
     volume: "8 (2)",
     pages: "173–186",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2024,
@@ -86,7 +78,6 @@ export const publications = [
     volume: "9 (2)",
     pages: "147–162",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2024,
@@ -96,7 +87,6 @@ export const publications = [
     volume: "29 (3)",
     pages: "46–62",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/114732/",
   },
   {
     year: 2023,
@@ -106,7 +96,6 @@ export const publications = [
     volume: "9 (1)",
     pages: "1–15",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2021,
@@ -116,7 +105,6 @@ export const publications = [
     volume: "5 (2)",
     pages: "75–86",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2021,
@@ -126,7 +114,6 @@ export const publications = [
     volume: "4 (2)",
     pages: "1–19",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2021,
@@ -136,7 +123,6 @@ export const publications = [
     volume: "2 (1)",
     pages: "172–203",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2021,
@@ -146,7 +132,6 @@ export const publications = [
     volume: "18 (1)",
     pages: "164–198",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/91011/",
   },
   {
     year: 2021,
@@ -156,7 +141,6 @@ export const publications = [
     volume: "9 (2)",
     pages: "148–158",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2021,
@@ -166,7 +150,6 @@ export const publications = [
     volume: "10 (1)",
     pages: "61–66",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
   {
     year: 2019,
@@ -176,6 +159,5 @@ export const publications = [
     volume: "3 (1)",
     pages: "90–102",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/view/creators/Busari%3D3ASaheed_Abdullahi%3D3A%3D3A.html",
   },
 ];

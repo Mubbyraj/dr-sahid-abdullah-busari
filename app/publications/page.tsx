@@ -1,83 +1,142 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, BookOpen, ExternalLink } from "lucide-react";
 import { publications } from "@/data/publications";
+
+export const metadata: Metadata = {
+  title: "Publications",
+  description:
+    "Explore publications by Dr. Saheed Abdullahi Busari, Associate Professor of Fiqh and Usul al-Fiqh at the International Islamic University Malaysia.",
+  alternates: {
+    canonical: "/publications",
+  },
+};
 
 export default function PublicationsPage() {
   return (
-    <main className="min-h-screen bg-[#f7f6f1]">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 lg:px-8">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#0b3a82]">
-            Scholarly Work
-          </p>
+    <main>
+      {/* =========================
+          PHOTOGRAPHIC HERO
+          ========================= */}
+      <section className="inner-hero inner-hero-publications">
+        <div className="inner-hero-overlay" />
 
-          <h1 className="font-serif text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-            Publications
-          </h1>
+        <div className="container inner-hero-content">
+          <span className="eyebrow">ACADEMIC WORK</span>
 
-          <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-            Selected scholarly publications by Assoc. Prof. Dr. Saheed
-            Abdullahi Busari in Islamic jurisprudence, Islamic finance,
-            halal studies, and related fields.
+          <h1>Publications</h1>
+
+          <p>
+            Selected academic publications and research works by Dr. Saheed
+            Abdullahi Busari.
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:px-8">
-        <div className="space-y-5">
-          {publications.map((publication) => (
-            <article
-              key={`${publication.year}-${publication.title}`}
-              className="group rounded-2xl border border-slate-200 bg-white p-6 transition-shadow hover:shadow-md sm:p-7"
-            >
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0 flex-1">
-                  <div className="mb-3 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-wide">
-                    <span className="text-[#0b3a82]">
-                      {publication.year}
-                    </span>
+      {/* =========================
+          INTRODUCTION
+          ========================= */}
+      <section className="page-section">
+        <div className="container">
+          <div className="section-heading">
+            <span className="section-kicker">Scholarly Contributions</span>
 
-                    <span className="h-1 w-1 rounded-full bg-slate-300" />
+            <h2>
+              Academic research and contributions to Islamic scholarship.
+            </h2>
 
-                    <span className="text-slate-500">
-                      {publication.type}
-                    </span>
-                  </div>
+            <p>
+              Browse selected publications covering areas of Islamic
+              jurisprudence, Usul al-Fiqh, Islamic finance and related fields.
+            </p>
+          </div>
 
-                  <h2 className="max-w-4xl font-serif text-xl font-bold leading-7 text-slate-900 sm:text-2xl">
-                    {publication.title}
-                  </h2>
-
-                  <div className="mt-4 space-y-1 text-sm leading-6 text-slate-600">
-                    <p>{publication.journal}</p>
-
-                    {(publication.volume || publication.pages) && (
-                      <p className="text-slate-500">
-                        {publication.volume}
-                        {publication.volume && publication.pages ? " · " : ""}
-                        {publication.pages}
-                      </p>
-                    )}
-                  </div>
+          {/* =========================
+              PUBLICATION LIST
+              ========================= */}
+          <div className="publication-list publication-list-enhanced">
+            {publications.map((publication) => (
+              <article
+                key={publication.title}
+                className="publication-card publication-card-enhanced"
+              >
+                <div className="publication-year">
+                  {publication.year}
                 </div>
 
-                {publication.url && (
-                  <Link
-                    href={publication.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-[#0b3a82] transition-colors hover:text-[#082d63]"
-                  >
-                    View Publication
-                    <ArrowUpRight
-                      size={16}
-                      className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    />
-                  </Link>
-                )}
-              </div>
-            </article>
-          ))}
+                <div className="publication-icon">
+                  <BookOpen size={24} />
+                </div>
+
+                <div className="publication-content">
+                  <span className="publication-type">
+                    ACADEMIC PUBLICATION
+                  </span>
+
+                  <h3>{publication.title}</h3>
+
+                  <p className="publication-meta">
+                    {publication.journal}
+                    {publication.volume && ` · Vol. ${publication.volume}`}
+                    {publication.pages && ` · pp. ${publication.pages}`}
+                  </p>
+
+                  <div className="publication-actions">
+                    <Link href="/contact" className="text-link">
+                      Publication enquiry
+                      <ArrowRight size={16} />
+                    </Link>
+
+                    <span className="publication-reference">
+                      <ExternalLink size={14} />
+                      Scholarly work
+                    </span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* =========================
+              EMPTY STATE
+              ========================= */}
+          {publications.length === 0 && (
+            <div className="empty-state">
+              <BookOpen size={28} />
+
+              <h3>No publications available yet</h3>
+
+              <p>
+                Publications will appear here as scholarly works are added to
+                the collection.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* =========================
+          CTA
+          ========================= */}
+      <section className="page-section publications-cta-section">
+        <div className="container">
+          <div className="publication-cta-card">
+            <div>
+              <span className="section-kicker">Academic Enquiries</span>
+
+              <h2>Interested in a publication or research area?</h2>
+
+              <p>
+                Get in touch for relevant academic enquiries and scholarly
+                matters.
+              </p>
+            </div>
+
+            <Link href="/contact" className="button button-primary">
+              Contact
+              <ArrowRight size={18} />
+            </Link>
+          </div>
         </div>
       </section>
     </main>

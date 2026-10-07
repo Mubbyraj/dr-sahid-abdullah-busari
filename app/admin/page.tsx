@@ -8,7 +8,6 @@ import {
   LogOut,
   Video,
   ArrowUpRight,
-  Mail,
 } from "lucide-react";
 
 const adminSections = [
@@ -41,13 +40,6 @@ const adminSections = [
     description: "Manage books, papers and other publications.",
     href: "/admin/publications",
     icon: BookOpen,
-  },
-  {
-    title: "Subscribers",
-    description:
-      "View and manage people receiving website notifications.",
-    href: "/admin/subscribers",
-    icon: Mail,
   },
 ];
 
