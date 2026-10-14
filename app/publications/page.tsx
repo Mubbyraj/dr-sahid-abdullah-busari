@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   },
 };
 
+const publicationGroups = [
+  { type: "Journal Article", title: "Journal Articles" },
+  { type: "Book Chapter", title: "Book Chapters" },
+  { type: "Conference Paper", title: "Conference Papers" },
+] as const;
+
 export default function PublicationsPage() {
   return (
     <main>
@@ -54,55 +60,67 @@ export default function PublicationsPage() {
           {/* =========================
               PUBLICATION LIST
               ========================= */}
-          <div className="publication-list publication-list-enhanced">
-            {publications.map((publication) => (
-              <article
-                key={publication.title}
-                className="publication-card publication-card-enhanced"
-              >
-                <div className="publication-year">
-                  {publication.year}
+          {publicationGroups.map((group) => {
+            const groupPublications = publications.filter(
+              (publication) => publication.type === group.type
+            );
+
+            if (groupPublications.length === 0) return null;
+
+            return (
+              <section className="publication-group" key={group.type}>
+                <div className="section-heading publication-group-heading">
+                  <span className="section-kicker">By category</span>
+                  <h2>{group.title}</h2>
                 </div>
 
-                <div className="publication-icon">
-                  <BookOpen size={24} />
+                <div className="publication-list publication-list-enhanced">
+                  {groupPublications.map((publication) => (
+                    <article
+                      key={publication.title}
+                      className="publication-card publication-card-enhanced"
+                    >
+                      <div className="publication-year">{publication.year}</div>
+
+                      <div className="publication-icon">
+                        <BookOpen size={24} />
+                      </div>
+
+                      <div className="publication-content">
+                        <span className="publication-type">{publication.type}</span>
+
+                        <h3>{publication.title}</h3>
+
+                        <p className="publication-meta">
+                          {publication.journal}
+                          {publication.volume && ` · Vol. ${publication.volume}`}
+                          {publication.pages && ` · pp. ${publication.pages}`}
+                        </p>
+
+                        <div className="publication-actions">
+                          {publication.url ? (
+                            <a
+                              href={publication.url}
+                              className="text-link"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              View publication
+                              <ExternalLink size={16} />
+                            </a>
+                          ) : (
+                            <span className="publication-reference">
+                              Publication link being verified
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </article>
+                  ))}
                 </div>
-
-                <div className="publication-content">
-                  <span className="publication-type">
-                    ACADEMIC PUBLICATION
-                  </span>
-
-                  <h3>{publication.title}</h3>
-
-                  <p className="publication-meta">
-                    {publication.journal}
-                    {publication.volume && ` · Vol. ${publication.volume}`}
-                    {publication.pages && ` · pp. ${publication.pages}`}
-                  </p>
-
-                  <div className="publication-actions">
-                    {publication.url ? (
-                      <a
-                        href={publication.url}
-                        className="text-link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View publication
-                        <ExternalLink size={16} />
-                      </a>
-                    ) : (
-                      <span className="publication-reference">
-                        Publication link being verified
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-
+              </section>
+            );
+          })}
           {/* =========================
               EMPTY STATE
               ========================= */}
