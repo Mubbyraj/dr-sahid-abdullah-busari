@@ -82,15 +82,21 @@ export default function PublicationsPage() {
                   </p>
 
                   <div className="publication-actions">
-                    <Link href="/contact" className="text-link">
-                      Publication enquiry
-                      <ArrowRight size={16} />
-                    </Link>
-
-                    <span className="publication-reference">
-                      <ExternalLink size={14} />
-                      Scholarly work
-                    </span>
+                    {publication.url ? (
+                      <a
+                        href={publication.url}
+                        className="text-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View publication
+                        <ExternalLink size={16} />
+                      </a>
+                    ) : (
+                      <span className="publication-reference">
+                        Publication link being verified
+                      </span>
+                    )}
                   </div>
                 </div>
               </article>
