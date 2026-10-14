@@ -232,4 +232,13 @@ export const publications = [
     type: "Journal Article",
     url: "https://doi.org/10.1108/JIABR-10-2019-0197",
   },
+  {
+    year: 2023,
+    title: "Maʾālāt (consequences) and their uṣūlī maxims: a juristic applied study",
+    journal: "International Journal of Fiqh and Usul al-Fiqh Studies",
+    volume: "7 (2)",
+    pages: "34–44",
+    type: "Journal Article",
+    url: "https://journals.iium.edu.my/al-fiqh/index.php/al-fiqh/article/view/301",
+  },
 ];
