@@ -47,7 +47,6 @@ export const publications = [
     pages: "164–182",
     type: "Book Chapter",
     url: "",
-    url: "https://irep.iium.edu.my/117656/",
   },
   {
     year: 2024,
@@ -147,7 +146,7 @@ export const publications = [
     volume: "18 (1)",
     pages: "164–198",
     type: "Journal Article",
-    url: "https://irep.iium.edu.my/91011/",
+    url: "",
   },
   {
     year: 2021,
