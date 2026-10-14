@@ -166,7 +166,7 @@ export const publications = [
     volume: "10 (1)",
     pages: "61–66",
     type: "Journal Article",
-    url: "https://journals.iium.edu.my/iiibf-journal/index.php/jif/issue/view/30",
+    url: "https://doi.org/10.31436/jif.v10i.527",
   },
   {
     year: 2019,
@@ -221,7 +221,7 @@ export const publications = [
     volume: "10 (2)",
     pages: "79–89",
     type: "Journal Article",
-    url: "https://journals.iium.edu.my/iiibf-journal/index.php/jif/issue/view/34",
+    url: "https://doi.org/10.31436/jif.v10i2.598",
   },
   {
     year: 2021,
