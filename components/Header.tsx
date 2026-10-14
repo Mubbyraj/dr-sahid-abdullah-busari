@@ -11,7 +11,6 @@ const navItems = [
   { label: "Questions & Answers", href: "/questions" },
   { label: "Lectures", href: "/lectures" },
   { label: "Publications", href: "/publications" },
-  { label: "Research", href: "/research" },
 ];
 
 export default function Header() {
