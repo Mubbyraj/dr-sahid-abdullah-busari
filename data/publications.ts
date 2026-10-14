@@ -47,6 +47,7 @@ export const publications = [
     pages: "164–182",
     type: "Book Chapter",
     url: "",
+    url: "https://irep.iium.edu.my/117656/",
   },
   {
     year: 2024,
