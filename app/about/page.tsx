@@ -52,7 +52,7 @@ export default function AboutPage() {
             <div
               className="about-photo"
               style={{
-                height: "520px",
+                height: "min(520px, 65vh)",
                 overflow: "hidden",
               }}
             >
@@ -194,11 +194,6 @@ export default function AboutPage() {
             </div>
 
             <div className="about-final-links">
-              <Link href="/research" className="button button-primary">
-                Research
-                <ArrowRight size={18} />
-              </Link>
-
               <Link href="/publications" className="button button-outline">
                 Publications
                 <ArrowRight size={18} />
