@@ -6,6 +6,7 @@ export const publications = [
     volume: "6 (2)",
     pages: "139–158",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/108592/",
   },
   {
     year: 2024,
@@ -15,6 +16,7 @@ export const publications = [
     volume: "7 (1)",
     pages: "1–15",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/112035/",
   },
   {
     year: 2024,
@@ -23,6 +25,7 @@ export const publications = [
     volume: "21 (1)",
     pages: "1–18",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/113223/",
   },
   {
     year: 2024,
@@ -32,6 +35,7 @@ export const publications = [
     volume: "10 (2)",
     pages: "1–11",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/114966/",
   },
   {
     year: 2024,
@@ -51,6 +55,7 @@ export const publications = [
     volume: "32 (2)",
     pages: "551–583",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/117494/",
   },
   {
     year: 2024,
@@ -60,6 +65,7 @@ export const publications = [
     volume: "12 (2)",
     pages: "1–17",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/114986/",
   },
   {
     year: 2024,
@@ -69,6 +75,7 @@ export const publications = [
     volume: "8 (2)",
     pages: "173–186",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/113658/",
   },
   {
     year: 2024,
@@ -78,6 +85,7 @@ export const publications = [
     volume: "9 (2)",
     pages: "147–162",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/117629/",
   },
   {
     year: 2024,
@@ -87,6 +95,7 @@ export const publications = [
     volume: "29 (3)",
     pages: "46–62",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/114732/",
   },
   {
     year: 2023,
@@ -132,6 +141,7 @@ export const publications = [
     volume: "18 (1)",
     pages: "164–198",
     type: "Journal Article",
+    url: "https://irep.iium.edu.my/91011/",
   },
   {
     year: 2021,
