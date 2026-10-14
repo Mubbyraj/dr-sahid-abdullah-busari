@@ -6,7 +6,6 @@ const siteUrl = "https://drbusarisaheed.com";
 const staticRoutes = [
   "",
   "/about",
-  "/research",
   "/publications",
   "/articles",
   "/lectures",
