@@ -46,6 +46,7 @@ export const publications = [
     volume: "",
     pages: "164–182",
     type: "Book Chapter",
+    url: "",
   },
   {
     year: 2024,
@@ -105,6 +106,7 @@ export const publications = [
     volume: "9 (1)",
     pages: "1–15",
     type: "Journal Article",
+    url: "",
   },
   {
     year: 2021,
@@ -114,6 +116,7 @@ export const publications = [
     volume: "5 (2)",
     pages: "75–86",
     type: "Journal Article",
+    url: "",
   },
   {
     year: 2021,
@@ -123,6 +126,7 @@ export const publications = [
     volume: "4 (2)",
     pages: "1–19",
     type: "Journal Article",
+    url: "",
   },
   {
     year: 2021,
@@ -132,6 +136,7 @@ export const publications = [
     volume: "2 (1)",
     pages: "172–203",
     type: "Journal Article",
+    url: "",
   },
   {
     year: 2021,
@@ -151,6 +156,7 @@ export const publications = [
     volume: "9 (2)",
     pages: "148–158",
     type: "Journal Article",
+    url: "",
   },
   {
     year: 2021,
@@ -160,6 +166,7 @@ export const publications = [
     volume: "10 (1)",
     pages: "61–66",
     type: "Journal Article",
+    url: "",
   },
   {
     year: 2019,
@@ -169,5 +176,6 @@ export const publications = [
     volume: "3 (1)",
     pages: "90–102",
     type: "Journal Article",
+    url: "",
   },
 ];
